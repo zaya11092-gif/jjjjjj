@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRON ASCENT — Calisthenics Progression</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111116;
+    --surface2: #18181f;
+    --border: #2a2a38;
+    --accent: #e8ff4a;
+    --accent2: #ff6b35;
+    --accent3: #7c5cfc;
+    --text: #e8e8f0;
+    --muted: #5a5a72;
+    --rank-novice: #7a9ab3;
+    --rank-apprentice: #4ecdc4;
+    --rank-warrior: #f7b731;
+    --rank-elite: #ff6b35;
+    --rank-master: #e040fb;
+    --rank-legend: #e8ff4a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  /* ══════════════════════════════════
+     AUTH SCREEN
+  ══════════════════════════════════ */
+  #authScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #authScreen.hidden { display: none; }
+
+  .auth-wrap {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .auth-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-shadow: 0 0 60px rgba(232,255,74,0.4);
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .auth-logo span { color: var(--text); }
+
+  .auth-tagline {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  /* Tab toggle */
+  .auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .auth-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .auth-tab.active {
+    background: rgba(232,255,74,0.08);
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .auth-tab:hover:not(.active) { color: var(--text); }
+
+  /* Form */
+  .auth-panel { display: none; }
+  .auth-panel.active { display: block; }
+
+  .auth-field {
+    margin-bottom: 16px;
+  }
+
+  .auth-label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .auth-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .auth-input:focus { border-color: var(--accent3); }
+  .auth-input.error { border-color: #ff4444; }
+
+  .auth-error {
+    color: #ff6666;
+    font-size: 0.78rem;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+    min-height: 18px;
+  }
+
+  .auth-btn {
+    width: 100%;
+    background: rgba(124,92,252,0.15);
+    border: 1px solid var(--accent3);
+    color: var(--accent);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 8px;
+  }
+
+  .auth-btn:hover {
+    background: rgba(124,92,252,0.3);
+    box-shadow: 0 0 24px rgba(124,92,252,0.3);
+  }
+
+  /* PIN dots */
+  .pin-field {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .pin-input {
+    flex: 1;
+    text-align: center;
+    font-size: 1.4rem;
+    padding: 10px 0;
+    letter-spacing: 0;
+  }
+
+  /* Existing accounts list */
+  .accounts-list {
+    margin-bottom: 28px;
+  }
+
+  .accounts-list-title {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .account-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .account-row:hover { border-color: var(--accent3); }
+
+  .account-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 2px solid currentColor;
+  }
+
+  .account-info { flex: 1; }
+  .account-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+
+  .account-meta {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .account-arrow {
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .no-accounts {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed var(--border);
+  }
+
+  /* ══════════════════════════════════
+     MAIN APP
+  ══════════════════════════════════ */
+  #appScreen { display: none; }
+  #appScreen.visible { display: block; }
+
+  header {
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,12,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 20px; }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(232,255,74,0.3);
+    line-height: 1;
+  }
+  .logo span { color: var(--text); }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 6px 12px 6px 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .user-chip:hover { border-color: var(--accent3); }
+
+  .user-chip-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    border: 1.5px solid currentColor;
+  }
+
+  .user-chip-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  .user-chip-arrow { color: var(--muted); font-size: 0.7rem; }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .stat-label {
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .rank-badge {
+    padding: 5px 12px;
+    border: 1.5px solid currentColor;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    transition: all 0.3s;
+  }
+
+  /* XP Bar */
+  .xp-bar-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .xp-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+    min-width: 60px;
+  }
+
+  .xp-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .xp-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 12px;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .xp-numbers {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 110px);
+  }
+
+  aside {
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky;
+    top: 110px;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  .aside-section { padding: 0 20px; margin-bottom: 28px; }
+
+  .aside-title {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .category-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 9px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .category-btn:hover { color: var(--text); background: var(--surface2); }
+  .category-btn.active {
+    color: var(--accent);
+    background: rgba(232,255,74,0.07);
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  .cat-icon { font-size: 1.1rem; }
+  .cat-progress { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+
+  .achievement-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .achievement {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    transition: all 0.3s;
+  }
+
+  .achievement.earned { opacity: 1; border-color: var(--accent3); background: rgba(124,92,252,0.08); }
+  .achievement-icon { font-size: 1.2rem; }
+  .achievement-name { font-weight: 600; letter-spacing: 0.5px; }
+  .achievement-desc { color: var(--muted); font-size: 0.72rem; }
+
+  main { padding: 32px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 3px; }
+  .section-sub { color: var(--muted); font-size: 0.85rem; letter-spacing: 1px; }
+
+  .move-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .move-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    transition: all 0.25s;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .move-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(232,255,74,0.03));
+    pointer-events: none;
+  }
+
+  .move-card:hover { border-color: var(--accent3); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.15); }
+  .move-card.locked { opacity: 0.45; cursor: not-allowed; }
+  .move-card.locked:hover { transform: none; border-color: var(--border); box-shadow: none; }
+  .move-card.mastered { border-color: var(--accent); background: linear-gradient(135deg, var(--surface), rgba(232,255,74,0.04)); }
+
+  .move-card.mastered::after {
+    content: '✦ MASTERED';
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .move-icon { font-size: 2rem; line-height: 1; }
+
+  .difficulty-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+    text-transform: uppercase;
+  }
+
+  .diff-1 { color: var(--rank-novice); }
+  .diff-2 { color: var(--rank-apprentice); }
+  .diff-3 { color: var(--rank-warrior); }
+  .diff-4 { color: var(--rank-elite); }
+  .diff-5 { color: var(--rank-master); }
+  .diff-6 { color: var(--rank-legend); }
+
+  .move-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 4px; }
+  .move-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+  .move-xp { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent3); margin-bottom: 12px; }
+
+  .card-progress { margin-bottom: 14px; }
+  .card-prog-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.5px; }
+  .card-prog-track { height: 3px; background: var(--border); overflow: hidden; }
+  .card-prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent2)); transition: width 0.8s ease; }
+  .move-card.mastered .card-prog-fill { background: var(--accent); }
+
+  .card-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+  .btn {
+    flex: 1;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { border-color: var(--text); color: var(--text); }
+
+  .btn-primary { border-color: var(--accent3); color: var(--accent3); background: rgba(124,92,252,0.08); }
+  .btn-primary:hover { background: rgba(124,92,252,0.2); border-color: var(--accent3); color: var(--accent); box-shadow: 0 0 16px rgba(124,92,252,0.3); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+  .lock-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    background: rgba(10,10,12,0.6);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .move-card.locked .lock-icon { opacity: 1; }
+
+  /* ── Toast ── */
+  .toast-container { position: fixed; bottom: 28px; right: 28px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
+
+  .toast {
+    background: var(--surface2);
+    border: 1px solid var(--accent3);
+    padding: 14px 20px;
+    max-width: 320px;
+    animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, toastOut 0.3s 3.5s ease forwards;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,92,252,0.2);
+  }
+
+  .toast-title { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; font-size: 1rem; color: var(--accent); margin-bottom: 2px; }
+  .toast-body { font-size: 0.82rem; color: var(--muted); }
+
+  @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateX(40px); } }
+
+  /* ── Move Modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-overlay.hidden { display: none; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    max-width: 520px;
+    width: 100%;
+    padding: 32px;
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.96); } to { opacity: 1; transform: none; } }
+
+  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: 1px solid var(--border); color: var(--muted); font-size: 1.1rem; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { color: var(--text); border-color: var(--text); }
+  .modal-icon { font-size: 3rem; margin-bottom: 12px; }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 3px; margin-bottom: 4px; }
+  .modal-diff { margin-bottom: 16px; }
+  .modal-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+  .modal-section-title { font-size: 0.7rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+
+  .progression-steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .prog-step { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+  .prog-step-num { width: 22px; height: 22px; border: 1px solid var(--accent3); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.7rem; flex-shrink: 0; color: var(--accent3); }
+
+  .sets-reps-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .sets-reps-item { background: var(--surface2); border: 1px solid var(--border); padding: 12px; text-align: center; }
+  .sr-label { font-size: 0.65rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .sr-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1px; color: var(--accent); }
+
+  .modal-actions { display: flex; gap: 10px; }
+
+  /* ── Account Modal ── */
+  #accountModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #accountModal.hidden { display: none; }
+
+  .account-modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 440px;
+    padding: 28px;
+    position: relative;
+    animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .account-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+
+  .am-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+
+  .am-account-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .am-account-row:hover { border-color: var(--accent3); }
+  .am-account-row.current-user { border-color: var(--accent); }
+
+  .am-account-row .account-avatar { width: 30px; height: 30px; font-size: 0.9rem; }
+  .am-account-name { flex: 1; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1.5px; }
+  .am-account-meta { font-size: 0.7rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .am-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  .am-btn {
+    flex: 1;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .am-btn:hover { color: var(--text); border-color: var(--text); }
+  .am-btn-danger { border-color: #ff4444; color: #ff6666; }
+  .am-btn-danger:hover { background: rgba(255,68,68,0.1); border-color: #ff4444; color: #ff8888; }
+
+  /* ── PIN entry modal ── */
+  #pinModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #pinModal.hidden { display: none; }
+
+  .pin-modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 320px;
+    padding: 28px;
+    text-align: center;
+    animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .pin-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 6px; }
+  .pin-modal-sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 20px; letter-spacing: 1px; }
+
+  .pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: all 0.15s;
+  }
+
+  .pin-dot.filled { background: var(--accent3); border-color: var(--accent3); }
+
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .pin-key {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .pin-key:hover { background: var(--border); }
+  .pin-key:active { transform: scale(0.95); }
+  .pin-key.del { font-size: 1rem; color: var(--muted); }
+
+  .pin-error { color: #ff6666; font-size: 0.78rem; min-height: 20px; margin-bottom: 8px; }
+
+  .pin-cancel {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-decoration: underline;
+  }
+
+  /* ── Rank up ── */
+  .rankup-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.9);
+    z-index: 9000;
+    pointer-events: none;
+  }
+
+  .rankup-overlay.hidden { display: none; }
+
+  .rankup-content { text-align: center; animation: rankupPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  .rankup-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 6px; color: var(--muted); margin-bottom: 8px; }
+  .rankup-rank { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; letter-spacing: 6px; color: var(--accent); text-shadow: 0 0 60px rgba(232,255,74,0.6); line-height: 1; }
+
+  @keyframes rankupPulse {
+    from { opacity: 0; transform: scale(0.6); }
+    50% { transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .reset-btn { background: none; border: 1px solid #ff3333; color: #ff3333; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.2s; margin-top: 16px; width: 100%; }
+  .reset-btn:hover { background: rgba(255,51,51,0.1); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* ── Avatar colors cycle ── */
+  .av-0 { color: #4ecdc4; }
+  .av-1 { color: #f7b731; }
+  .av-2 { color: #ff6b35; }
+  .av-3 { color: #e040fb; }
+  .av-4 { color: #e8ff4a; }
+  .av-5 { color: #7c5cfc; }
+  .av-6 { color: #ff4466; }
+  .av-7 { color: #4af7a0; }
+
+  /* ── Leaderboard / Leagues ── */
+  #leaderboardModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(10px);
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.2s ease;
+  }
+  #leaderboardModal.hidden { display: none; }
+
+  .lb-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 580px;
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+
+  /* League tab strip */
+  .lb-league-tabs {
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+  .lb-league-tabs::-webkit-scrollbar { display: none; }
+
+  .lb-league-tab {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+    min-width: 72px;
+  }
+  .lb-league-tab:hover { background: rgba(255,255,255,0.03); }
+  .lb-league-tab.active { border-bottom-color: var(--lb-league-color, var(--accent)); }
+
+  .lb-tab-icon { font-size: 1.4rem; line-height: 1; }
+  .lb-tab-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lb-league-tab.active .lb-tab-name { color: var(--text); }
+
+  .lb-tab-you {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  /* League header */
+  .lb-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .lb-league-emblem {
+    font-size: 3rem;
+    line-height: 1;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 12px var(--lb-league-color, #fff3));
+  }
+
+  .lb-header-text { flex: 1; }
+  .lb-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .lb-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .lb-your-pos-chip {
+    padding: 6px 12px;
+    border: 1.5px solid var(--lb-league-color, var(--accent));
+    color: var(--lb-league-color, var(--accent));
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1.1;
+    flex-shrink: 0;
+  }
+  .lb-your-pos-chip small {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  /* Zone banners */
+  .lb-zones {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .lb-zone-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(42,42,56,0.6);
+  }
+  .lb-zone-promote { background: rgba(74,247,160,0.06); color: #4af7a0; }
+  .lb-zone-demote  { background: rgba(255,68,68,0.06);  color: #ff6666; }
+  .lb-zone-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  /* Rows */
+  .lb-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 6px 0;
+  }
+
+  .lb-section-divider {
+    padding: 4px 24px 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-top: 1px dashed var(--border);
+    margin-top: 2px;
+  }
+
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    border-bottom: 1px solid rgba(42,42,56,0.4);
+    transition: background 0.15s;
+    position: relative;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row:hover { background: rgba(255,255,255,0.02); }
+
+  .lb-row.is-you {
+    background: rgba(232,255,74,0.04);
+    border-left: 3px solid var(--accent);
+    padding-left: 21px;
+  }
+
+  .lb-row.zone-promote { border-left: 3px solid #4af7a0; padding-left: 21px; }
+  .lb-row.zone-promote.is-you { border-left: 3px solid var(--accent); }
+  .lb-row.zone-demote  { border-left: 3px solid #ff4444; padding-left: 21px; }
+  .lb-row.zone-demote.is-you  { border-left: 3px solid var(--accent); }
+
+  .lb-pos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    width: 30px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .lb-pos.gold   { color: #ffd700; text-shadow: 0 0 14px rgba(255,215,0,0.5); }
+  .lb-pos.silver { color: #c0c0c0; text-shadow: 0 0 10px rgba(192,192,192,0.4); }
+  .lb-pos.bronze { color: #cd7f32; text-shadow: 0 0 10px rgba(205,127,50,0.4); }
+
+  .lb-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+  }
+
+  .lb-info { flex: 1; min-width: 0; }
+
+  .lb-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+  }
+
+  .lb-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lb-you-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 1px 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .lb-skill-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 1px;
+    padding: 1px 5px;
+    border: 1px solid currentColor;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .lb-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  .lb-bar-wrap {
+    margin-top: 4px;
+    height: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .lb-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    transition: width 0.9s ease;
+  }
+
+  .lb-xp-col {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .lb-xp-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .lb-xp-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+  }
+
+  .lb-rank-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 1px;
+    padding: 1px 5px;
+    border: 1px solid currentColor;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .lb-empty {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+
+  .lb-footer {
+    padding: 12px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .lb-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  .leaderboard-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 9px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    text-align: left;
+    margin-top: 4px;
+  }
+  .leaderboard-btn:hover { color: var(--accent); background: rgba(232,255,74,0.05); }
+
+  .lb-league-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ AUTH SCREEN ══════════════════ -->
+<div id="authScreen">
+  <div class="auth-wrap">
+    <div class="auth-logo">Iron<span>Ascent</span></div>
+    <div class="auth-tagline">Calisthenics Progression System</div>
+
+    <div id="existingAccountsSection" class="accounts-list" style="display:none">
+      <div class="accounts-list-title">Select your account</div>
+      <div id="authAccountList"></div>
+      <div style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:16px;margin-bottom:8px;">— or create a new account —</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')" id="tabLogin">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')" id="tabRegister">Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-panel active" id="panelLogin">
+      <div class="auth-field">
+        <label class="auth-label">Username</label>
+        <input class="auth-input" id="loginUsername" type="text" placeholder="your_username" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">4-Digit PIN</label>
+        <div class="pin-field">
+          <input class="auth-input pin-input" id="lp0" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="lp1" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="lp2" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="lp3" type="password" inputmode="numeric" maxlength="1">
+        </div>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Enter the Arena →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-panel" id="panelRegister">
+      <div class="auth-field">
+        <label class="auth-label">Choose a Username</label>
+        <input class="auth-input" id="regUsername" type="text" placeholder="iron_warrior" autocomplete="off" spellcheck="false" maxlength="20">
+        <div class="auth-error" id="regUsernameError"></div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Choose a 4-Digit PIN</label>
+        <div class="pin-field">
+          <input class="auth-input pin-input" id="rp0" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="rp1" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="rp2" type="password" inputmode="numeric" maxlength="1">
+          <input class="auth-input pin-input" id="rp3" type="password" inputmode="numeric" maxlength="1">
+        </div>
+        <div class="auth-error" id="regPinError"></div>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Begin Your Ascent →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP SCREEN ══════════════════ -->
+<div id="appScreen">
+
+  <header>
+    <div class="header-left">
+      <div class="logo">Iron<span>Ascent</span></div>
+      <div class="user-chip" onclick="openAccountModal()">
+        <div class="user-chip-avatar" id="headerAvatar"></div>
+        <span class="user-chip-name" id="headerUsername"></span>
+        <span class="user-chip-arrow">▾</span>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span class="stat-label">Total XP</span>
+        <span class="stat-value" id="totalXP">0</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">Mastered</span>
+        <span class="stat-value" id="totalMastered">0</span>
+      </div>
+      <div class="rank-badge" id="rankBadge">—</div>
+    </div>
+  </header>
+
+  <div class="xp-bar-wrap">
+    <span class="xp-label">Progress</span>
+    <div class="xp-track">
+      <div class="xp-fill" id="xpFill" style="width:0%"></div>
+    </div>
+    <span class="xp-numbers" id="xpNumbers">0 / 500 XP</span>
+  </div>
+
+  <div class="main-grid">
+    <aside>
+      <div class="aside-section">
+        <div class="aside-title">Categories</div>
+        <button class="category-btn active" data-cat="all" onclick="filterCategory('all')">
+          <span class="cat-icon">⬡</span> All Moves
+          <span class="cat-progress" id="prog-all"></span>
+        </button>
+        <button class="category-btn" data-cat="push" onclick="filterCategory('push')">
+          <span class="cat-icon">💪</span> Push
+          <span class="cat-progress" id="prog-push"></span>
+        </button>
+        <button class="category-btn" data-cat="pull" onclick="filterCategory('pull')">
+          <span class="cat-icon">🏋️</span> Pull
+          <span class="cat-progress" id="prog-pull"></span>
+        </button>
+        <button class="category-btn" data-cat="legs" onclick="filterCategory('legs')">
+          <span class="cat-icon">🦵</span> Legs
+          <span class="cat-progress" id="prog-legs"></span>
+        </button>
+        <button class="category-btn" data-cat="core" onclick="filterCategory('core')">
+          <span class="cat-icon">🌀</span> Core
+          <span class="cat-progress" id="prog-core"></span>
+        </button>
+        <button class="category-btn" data-cat="skill" onclick="filterCategory('skill')">
+          <span class="cat-icon">⚡</span> Skills
+          <span class="cat-progress" id="prog-skill"></span>
+        </button>
+      </div>
+
+      <div class="aside-section">
+        <div class="aside-title">Achievements</div>
+        <div class="achievement-list" id="achievementList"></div>
+      </div>
+
+      <div class="aside-section">
+        <div class="aside-title">Community</div>
+        <button class="leaderboard-btn" onclick="openLeaderboard()">
+          <span class="cat-icon">🪨</span> Leagues
+        </button>
+      </div>
+
+      <div class="aside-section">
+        <button class="reset-btn" onclick="confirmReset()">↺ Reset My Progress</button>
+      </div>
+    </aside>
+
+    <main>
+      <div class="section-header">
+        <div class="section-title" id="sectionTitle">All Moves</div>
+        <div class="section-sub" id="sectionSub">Your calisthenics skill tree</div>
+      </div>
+      <div class="move-grid" id="moveGrid"></div>
+    </main>
+  </div>
+</div>
+
+<!-- MOVE MODAL -->
+<div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal(null)">✕</button>
+    <div class="modal-icon" id="modalIcon"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-diff" id="modalDiff"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <div class="modal-section-title">Progression Path</div>
+    <div class="progression-steps" id="progSteps"></div>
+    <div class="modal-section-title">Target</div>
+    <div class="sets-reps-grid" id="setsReps"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div id="accountModal" class="hidden">
+  <div class="account-modal-box">
+    <button class="modal-close" onclick="closeAccountModal()">✕</button>
+    <div class="account-modal-title">Accounts</div>
+
+    <div class="am-section-label">Signed in as</div>
+    <div id="amCurrentUser"></div>
+
+    <div class="am-section-label">Switch Account</div>
+    <div id="amOtherUsers"></div>
+
+    <div class="am-actions">
+      <button class="am-btn" onclick="closeAccountModal();switchAuthTab('register');showAuth()">+ New Account</button>
+      <button class="am-btn am-btn-danger" onclick="deleteCurrentAccount()">Delete Account</button>
+    </div>
+    <div class="am-actions" style="margin-top:8px;">
+      <button class="am-btn" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN ENTRY MODAL (for switching accounts) -->
+<div id="pinModal" class="hidden">
+  <div class="pin-modal-box">
+    <button class="modal-close" onclick="closePinModal()" style="position:absolute;top:12px;right:12px;">✕</button>
+    <div class="pin-modal-title" id="pinModalTitle">Enter PIN</div>
+    <div class="pin-modal-sub" id="pinModalSub">for <span id="pinModalUser"></span></div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2">0</button>
+      <button class="pin-key del" onclick="pinBackspace()">⌫</button>
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <button class="pin-cancel" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- RANK UP -->
+<div class="rankup-overlay hidden" id="rankupOverlay">
+  <div class="rankup-content">
+    <div class="rankup-label">Rank Achieved</div>
+    <div class="rankup-rank" id="rankupRankName"></div>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div id="leaderboardModal" class="hidden">
+  <div class="lb-box">
+    <button class="modal-close" onclick="closeLeaderboard()" style="position:absolute;top:16px;right:16px;z-index:2;">✕</button>
+
+    <!-- League selector tabs -->
+    <div class="lb-league-tabs" id="lbLeagueTabs"></div>
+
+    <!-- Active league header -->
+    <div class="lb-header" id="lbHeader"></div>
+
+    <!-- Promotion / demotion zone banners -->
+    <div class="lb-zones" id="lbZones"></div>
+
+    <!-- Rows -->
+    <div class="lb-list" id="lbList"></div>
+
+    <div class="lb-footer">
+      <span class="lb-count" id="lbCount"></span>
+      <button class="btn btn-primary" style="flex:0;padding:8px 16px;font-size:0.8rem;" onclick="closeLeaderboard()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const MOVES = [
+  // PUSH
+  { id:'wall-push', name:'Wall Push-Up', cat:'push', icon:'🤲', diff:1, xp:50, prereqs:[], desc:'The foundation of all push movements. Build wrist, shoulder, and chest activation against a wall.', steps:['Stand arm-length from wall','Place hands at shoulder width','Lean and push through chest','Control the negative'], sets:3, reps:'15', rest:'60s' },
+  { id:'incline-push', name:'Incline Push-Up', cat:'push', icon:'📐', diff:1, xp:80, prereqs:['wall-push'], desc:'Elevate your hands on a bench or step to progress toward a full push-up.', steps:['Hands on elevated surface','Body in straight plank line','Lower chest to surface','Drive back up explosively'], sets:3, reps:'12', rest:'60s' },
+  { id:'push-up', name:'Push-Up', cat:'push', icon:'🏃', diff:2, xp:120, prereqs:['incline-push'], desc:'The classic. Master form before adding reps — no sagging hips, full range of motion.', steps:['Hands below shoulders','Core braced, body rigid','Lower until chest grazes floor','Press up fully, lock out'], sets:4, reps:'15', rest:'90s' },
+  { id:'diamond-push', name:'Diamond Push-Up', cat:'push', icon:'💎', diff:3, xp:200, prereqs:['push-up'], desc:'Hands form a diamond shape — brutal tricep and inner chest isolation.', steps:['Thumbs and index fingers touching','Elbows flare back, not out','Deep range of motion','Squeeze at top'], sets:3, reps:'10', rest:'90s' },
+  { id:'pike-push', name:'Pike Push-Up', cat:'push', icon:'🔺', diff:3, xp:220, prereqs:['push-up'], desc:'Inverted V position targets shoulders. The key progression toward handstand push-ups.', steps:['Hips high, form inverted V','Head drops toward floor','Elbows track outward slightly','Press back to start'], sets:3, reps:'8', rest:'90s' },
+  { id:'archer-push', name:'Archer Push-Up', cat:'push', icon:'🏹', diff:4, xp:350, prereqs:['diamond-push','push-up'], desc:'Unilateral loading — one arm does most of the work. The bridge to one-arm push-ups.', steps:['Wide hand placement','Shift weight to one side','Other arm straight as a guide','Alternate sides'], sets:3, reps:'6 each', rest:'2min' },
+  { id:'pseudo-planche-push', name:'Pseudo Planche Push-Up', cat:'push', icon:'✋', diff:4, xp:400, prereqs:['push-up'], desc:'Hands rotated outward and pushed toward hips — extreme shoulder and wrist conditioning.', steps:['Rotate hands to face feet','Lean forward aggressively','Protract scapulae','Slow descent, explosive press'], sets:3, reps:'8', rest:'2min' },
+  { id:'hspu', name:'Handstand Push-Up', cat:'push', icon:'🤸', diff:5, xp:800, prereqs:['pike-push','archer-push'], desc:'Vertical pressing mastery. Use a wall first. Pure overhead strength.', steps:['Kick up to wall handstand','Head between arms, lower to floor','Drive up explosively','Hold top position solid'], sets:3, reps:'5', rest:'3min' },
+  { id:'one-arm-push', name:'One-Arm Push-Up', cat:'push', icon:'☝️', diff:5, xp:900, prereqs:['archer-push'], desc:'The pinnacle of horizontal push strength. Every muscle fires to stabilize.', steps:['Feet wider than shoulder-width','Body square, no rotation','One arm behind back','Slow and controlled descent'], sets:3, reps:'3 each', rest:'3min' },
+  { id:'planche-push', name:'Planche Push-Up', cat:'push', icon:'🌠', diff:6, xp:2000, prereqs:['pseudo-planche-push','hspu'], desc:'Legendary. Full body parallel to the ground, push-ups from a planche hold. Years of training required.', steps:['Achieve tuck planche hold first','Extend to straddle planche','Full planche lean','Press — the ultimate test'], sets:2, reps:'3', rest:'5min' },
+  // PULL
+  { id:'dead-hang', name:'Dead Hang', cat:'pull', icon:'🧲', diff:1, xp:50, prereqs:[], desc:'Hang from a bar with straight arms. Builds grip strength and shoulder health before any pulling.', steps:['Jump to bar, overhand grip','Let body hang fully','Engage shoulders lightly','Breathe and hold'], sets:3, reps:'30s', rest:'90s' },
+  { id:'scapular-pull', name:'Scapular Pull-Up', cat:'pull', icon:'🦅', diff:1, xp:80, prereqs:['dead-hang'], desc:'Activate your lats without bending elbows. Essential for pull-up health and power.', steps:['Start in dead hang','Pull shoulder blades DOWN and TOGETHER','No elbow bend — pure scapular','Lower back to hang'], sets:3, reps:'10', rest:'60s' },
+  { id:'neg-pull', name:'Negative Pull-Up', cat:'pull', icon:'⬇️', diff:2, xp:100, prereqs:['scapular-pull'], desc:'Jump to top position, lower yourself as slowly as possible. Builds strength faster than regular reps.', steps:['Jump or step to chin-over-bar position','Take 5–8 seconds to lower','Full dead hang at bottom','Repeat'], sets:3, reps:'5', rest:'2min' },
+  { id:'pull-up', name:'Pull-Up', cat:'pull', icon:'⬆️', diff:2, xp:150, prereqs:['neg-pull'], desc:'The king of upper body pulling. Overhand grip, chin clears the bar, full lockout at bottom.', steps:['Overhand grip, shoulder width','Depress and retract scapulae','Elbows drive DOWN to floor','Full range — all the way down'], sets:4, reps:'8', rest:'2min' },
+  { id:'chin-up', name:'Chin-Up', cat:'pull', icon:'🙂', diff:2, xp:130, prereqs:['neg-pull'], desc:'Supinated grip engages biceps more. Often easier than pull-ups — great for building rep volume.', steps:['Underhand grip, shoulder width','Start from dead hang','Pull elbows back and down','Chest to bar'], sets:4, reps:'10', rest:'90s' },
+  { id:'wide-pull', name:'Wide Grip Pull-Up', cat:'pull', icon:'↔️', diff:3, xp:220, prereqs:['pull-up'], desc:'Wider grip puts more emphasis on the lats and outer back. Harder leverage.', steps:['Hands wider than shoulders','Pull elbows OUT and DOWN','Really stretch the lats at bottom','Keep core tight'], sets:3, reps:'8', rest:'2min' },
+  { id:'commando-pull', name:'Commando Pull-Up', cat:'pull', icon:'🪖', diff:3, xp:260, prereqs:['pull-up','chin-up'], desc:'Neutral grip with hands staggered, alternate which side clears the bar. Hits back differently.', steps:['Grab bar with palms facing each other','Alternate right then left side','Control rotation through core','Slow and deliberate'], sets:3, reps:'8', rest:'2min' },
+  { id:'chest-to-bar', name:'Chest-to-Bar Pull-Up', cat:'pull', icon:'🎯', diff:4, xp:380, prereqs:['wide-pull'], desc:'Pull until your chest contacts the bar. Extra range of motion, full lat contraction.', steps:['Full dead hang start','Drive elbows aggressively to floor','Lean back slightly','Chest touches bar at top'], sets:3, reps:'6', rest:'2min' },
+  { id:'archer-pull', name:'Archer Pull-Up', cat:'pull', icon:'🎢', diff:4, xp:420, prereqs:['chest-to-bar'], desc:'One arm pulls while the other extends straight — unilateral pulling to build toward one-arm pull-up.', steps:['Wide grip overhand','Shift weight to one side fully','Other arm stays relatively straight','Alternate every rep'], sets:3, reps:'5 each', rest:'3min' },
+  { id:'l-sit-pull', name:'L-Sit Pull-Up', cat:'pull', icon:'📐', diff:4, xp:450, prereqs:['pull-up'], desc:'Maintain an L-sit position throughout — core and hip flexors scream while you pull.', steps:['Hang with legs straight out 90°','Hold L throughout entire set','Slow and controlled','Never let legs drop'], sets:3, reps:'5', rest:'3min' },
+  { id:'muscle-up', name:'Muscle-Up', cat:'pull', icon:'🔥', diff:5, xp:1000, prereqs:['chest-to-bar','archer-pull'], desc:'From below the bar to above it in one fluid motion. Pull + transition + dip combined.', steps:['False grip at bottom','Explosive pull — bring hips to bar','Lean forward and transition','Press to lockout above'], sets:3, reps:'3', rest:'4min' },
+  { id:'one-arm-pull', name:'One-Arm Pull-Up', cat:'pull', icon:'☝️', diff:6, xp:2500, prereqs:['archer-pull','muscle-up'], desc:'The absolute pinnacle of pulling strength. One hand, full range. Rare human achievement.', steps:['Hang from one arm fully','Other arm behind back','Pull elbow to hip in a straight line','Control every centimeter'], sets:2, reps:'2 each', rest:'5min' },
+  // LEGS
+  { id:'squat', name:'Bodyweight Squat', cat:'legs', icon:'🦿', diff:1, xp:60, prereqs:[], desc:'Foundation of all lower body work. Master hip hinge, depth, and knee tracking first.', steps:['Feet shoulder-width, toes out slightly','Hips back and down','Knees track over toes','Drive through heels to stand'], sets:3, reps:'20', rest:'60s' },
+  { id:'lunge', name:'Reverse Lunge', cat:'legs', icon:'👣', diff:1, xp:70, prereqs:['squat'], desc:'Single leg emphasis, easier on knees than forward lunges. Builds unilateral strength.', steps:['Step one leg BACK','Lower back knee toward floor','Front shin stays vertical','Push through front heel to stand'], sets:3, reps:'12 each', rest:'60s' },
+  { id:'jump-squat', name:'Jump Squat', cat:'legs', icon:'💥', diff:2, xp:120, prereqs:['squat'], desc:'Explosive power training. Land softly to build joint integrity.', steps:['Squat down to parallel','Explode upward — max height','Land softly, bend knees','Immediately into next rep'], sets:4, reps:'10', rest:'90s' },
+  { id:'split-squat', name:'Bulgarian Split Squat', cat:'legs', icon:'🏋️', diff:3, xp:240, prereqs:['lunge','squat'], desc:'Rear foot elevated — brutal quad and glute isolation. Humbling for even strong athletes.', steps:['Rear foot on bench','Lower down slowly, 3 seconds','Front knee tracks over toe','Drive through heel at top'], sets:3, reps:'10 each', rest:'2min' },
+  { id:'pistol-neg', name:'Pistol Negatives', cat:'legs', icon:'🔫', diff:3, xp:280, prereqs:['split-squat'], desc:'Lower yourself slowly on one leg. Builds the strength and balance for full pistol squats.', steps:['Balance on one leg','Extend other leg forward','Slowly lower over 5 seconds','Use support to stand back up'], sets:3, reps:'5 each', rest:'2min' },
+  { id:'pistol', name:'Pistol Squat', cat:'legs', icon:'🎯', diff:4, xp:600, prereqs:['pistol-neg'], desc:'Single-leg squat to full depth, other leg extended forward. Elite lower body strength and balance.', steps:['One leg off the ground','Arms forward for balance','Sit all the way down','Drive up — no touch-down'], sets:3, reps:'5 each', rest:'3min' },
+  { id:'shrimp-squat', name:'Shrimp Squat', cat:'legs', icon:'🦐', diff:5, xp:900, prereqs:['pistol'], desc:'Rear leg bent and held — demands extreme quad flexibility and single-leg strength.', steps:['Hold rear foot behind you','Balance on front leg','Lower rear knee to floor','Extend back to standing'], sets:3, reps:'5 each', rest:'3min' },
+  // CORE
+  { id:'plank', name:'Plank', cat:'core', icon:'📏', diff:1, xp:50, prereqs:[], desc:'Anti-extension core stability. The most important core exercise. Squeeze everything.', steps:['Forearms on floor, elbows below shoulders','Body straight from head to heel','Squeeze glutes and abs','Breathe steadily'], sets:3, reps:'45s', rest:'60s' },
+  { id:'hollow-hold', name:'Hollow Body Hold', cat:'core', icon:'🌙', diff:2, xp:100, prereqs:['plank'], desc:'Fundamental gymnastics core position. Lower back pressed into floor, legs and arms extended.', steps:['Lie flat on back','Press lower back into floor','Extend arms overhead, lift shoulders','Raise legs — find the edge'], sets:3, reps:'30s', rest:'90s' },
+  { id:'hanging-knee', name:'Hanging Knee Raise', cat:'core', icon:'🔗', diff:2, xp:110, prereqs:['dead-hang'], desc:'Hanging from bar, raise knees to chest. First step toward advanced hanging core work.', steps:['Dead hang position','Posteriorly tilt pelvis first','Lift knees to chest','Lower slowly — no swing'], sets:3, reps:'12', rest:'90s' },
+  { id:'l-sit', name:'L-Sit', cat:'core', icon:'💺', diff:3, xp:280, prereqs:['hollow-hold','plank'], desc:'On parallettes or floor, hold legs at 90° with straight arms. Pure compression strength.', steps:['Press into parallettes or floor','Lift hips and extend legs forward','Depress scapulae','Hold — every second counts'], sets:4, reps:'15s', rest:'2min' },
+  { id:'hanging-leg', name:'Hanging Leg Raise', cat:'core', icon:'🦿', diff:3, xp:260, prereqs:['hanging-knee'], desc:'Full leg raise to horizontal from hang. Intense hip flexor and core demand.', steps:['Start in dead hang','Legs straight, raise to parallel','Control — no momentum','Pause at top, lower slowly'], sets:3, reps:'10', rest:'2min' },
+  { id:'toes-to-bar', name:'Toes-to-Bar', cat:'core', icon:'☝️', diff:4, xp:400, prereqs:['hanging-leg'], desc:'From dead hang, swing toes all the way to touch the bar. Explosive hip flexion.', steps:['Start in dead hang, slight hollow','Use a small hip hinge','Explosively drive feet to bar','Control the way down'], sets:3, reps:'8', rest:'2min' },
+  { id:'front-lever-tuck', name:'Tuck Front Lever', cat:'core', icon:'🌊', diff:4, xp:500, prereqs:['l-sit','hanging-leg'], desc:'Tuck knees to chest, body horizontal from bar. Incredible posterior chain and lat demand.', steps:['Hang from bar','Pull bar to hips as you raise tucked body','Hold horizontal with tucked knees','Depress scapulae hard'], sets:4, reps:'10s', rest:'3min' },
+  { id:'v-sit', name:'V-Sit', cat:'core', icon:'✌️', diff:5, xp:800, prereqs:['l-sit','toes-to-bar'], desc:'L-sit with legs elevated ABOVE horizontal. Requires extreme hip flexor strength and compression.', steps:['Achieve solid L-sit first','Use hip flexor strength to raise legs','Aim for legs at 45° or higher','Hold perfectly still'], sets:3, reps:'10s', rest:'3min' },
+  { id:'front-lever', name:'Full Front Lever', cat:'core', icon:'🔱', diff:6, xp:2000, prereqs:['front-lever-tuck','v-sit'], desc:'Body perfectly horizontal hanging from bar, legs together and straight. Elite gymnastic hold.', steps:['Progress through straddle lever first','Both legs together and extended','Body absolutely parallel to ground','Breathe, stay tight'], sets:3, reps:'5s', rest:'5min' },
+  // SKILL
+  { id:'crow-pose', name:'Crow Pose', cat:'skill', icon:'🦅', diff:2, xp:150, prereqs:['plank'], desc:'Arms bent, knees on upper arms, lean forward until feet leave the ground. First arm balance.', steps:['Squat down with hands on floor','Knees on back of upper arms','Lean forward slowly','Find the tipping point'], sets:3, reps:'15s', rest:'90s' },
+  { id:'wall-hs', name:'Wall Handstand', cat:'skill', icon:'🙃', diff:2, xp:180, prereqs:['push-up','plank'], desc:'Kick up to handstand against wall. Build shoulder strength and spatial awareness.', steps:['Hands 6 inches from wall','Kick up one leg at a time','Squeeze core and glutes','Work up to 60 second holds'], sets:3, reps:'30s', rest:'2min' },
+  { id:'headstand', name:'Headstand', cat:'skill', icon:'🔄', diff:2, xp:160, prereqs:['plank'], desc:'Tripod headstand builds inversion confidence, neck strength, and shoulder alignment.', steps:['Hands and head form triangle','Knees to elbows first (tripod)','Extend legs up slowly','Engage core to stay aligned'], sets:3, reps:'30s', rest:'2min' },
+  { id:'freestanding-hs', name:'Freestanding Handstand', cat:'skill', icon:'⚡', diff:4, xp:700, prereqs:['wall-hs','headstand'], desc:'Balance without the wall. Finger pressure controls balance. Takes months of daily practice.', steps:['Kick up near wall first','Find balance point over hands','Control with finger tips','Work toward 10-second holds'], sets:5, reps:'attempts', rest:'2min' },
+  { id:'back-lever', name:'Back Lever', cat:'skill', icon:'🏹', diff:4, xp:650, prereqs:['pull-up','hollow-hold'], desc:'From a skin-the-cat position, extend body horizontally downward from bar. Shoulder mobility key.', steps:['Skin the cat through bar','Pike position first, then tuck','Extend to horizontal body','Straight arms, hold'], sets:3, reps:'8s', rest:'3min' },
+  { id:'human-flag', name:'Human Flag', cat:'skill', icon:'🚩', diff:6, xp:2500, prereqs:['back-lever','freestanding-hs','one-arm-push'], desc:'Body held horizontal on a vertical pole. One of the most visually impressive feats in calisthenics.', steps:['Bottom arm pushes, top arm pulls','Start with tuck position','Straddle to extend legs','Full flag — legendary status'], sets:2, reps:'3s', rest:'5min' },
+  { id:'planche', name:'Planche', cat:'skill', icon:'🌟', diff:6, xp:3000, prereqs:['pseudo-planche-push','freestanding-hs','front-lever'], desc:'Straight-arm body hold parallel to the ground, no leg contact. Requires years of dedicated training.', steps:['Master tuck planche first','Advance straddle planche','Reduce straddle width over months','Full planche — pinnacle'], sets:2, reps:'3s', rest:'5min' }
+];
+
+const RANKS = [
+  { name:'Beginner', min:0, color:'#7a9ab3' },
+  { name:'Novice', min:300, color:'#4ecdc4' },
+  { name:'Apprentice', min:800, color:'#f7b731' },
+  { name:'Warrior', min:2000, color:'#ff6b35' },
+  { name:'Elite', min:5000, color:'#e040fb' },
+  { name:'Master', min:10000, color:'#e8ff4a' },
+  { name:'Legend', min:20000, color:'#ffffff' },
+];
+
+const ACHIEVEMENTS = [
+  { id:'first_blood', icon:'🩸', name:'First Rep', desc:'Complete your first move', check: s => s.mastered.length >= 1 },
+  { id:'push_pro', icon:'💪', name:'Push Specialist', desc:'Master 4 push moves', check: s => s.mastered.filter(id => MOVES.find(m=>m.id===id)?.cat==='push').length >= 4 },
+  { id:'pull_lord', icon:'🏋️', name:'Pull Lord', desc:'Master 4 pull moves', check: s => s.mastered.filter(id => MOVES.find(m=>m.id===id)?.cat==='pull').length >= 4 },
+  { id:'iron_core', icon:'⚙️', name:'Iron Core', desc:'Master 3 core moves', check: s => s.mastered.filter(id => MOVES.find(m=>m.id===id)?.cat==='core').length >= 3 },
+  { id:'acrobat', icon:'🤸', name:'Acrobat', desc:'Master 2 skill moves', check: s => s.mastered.filter(id => MOVES.find(m=>m.id===id)?.cat==='skill').length >= 2 },
+  { id:'well_rounded', icon:'⭕', name:'Well Rounded', desc:'Master a move in every category', check: s => ['push','pull','legs','core','skill'].every(cat => s.mastered.some(id => MOVES.find(m=>m.id===id)?.cat===cat)) },
+  { id:'high_roller', icon:'💰', name:'High Roller', desc:'Reach 5000 XP', check: s => s.xp >= 5000 },
+  { id:'legend_ach', icon:'👑', name:'Legend', desc:'Reach Master rank', check: s => s.xp >= 10000 },
+];
+
+// ══════════════════════════════════════
+// ACCOUNT STORAGE
+// All accounts stored under 'ironascent_accounts' as:
+// { [username_lower]: { username, pinHash, avatarColor, data: {...} } }
+// Current session stored under 'ironascent_session'
+// ══════════════════════════════════════
+
+function hashPin(pin) {
+  // Simple non-crypto hash — fine for a local fun app
+  let h = 0;
+  for (let i = 0; i < pin.length; i++) h = (Math.imul(31, h) + pin.charCodeAt(i)) | 0;
+  return h.toString(36);
+}
+
+function getAccounts() {
+  try { return JSON.parse(localStorage.getItem('ironascent_accounts') || '{}'); } catch { return {}; }
+}
+
+function saveAccounts(accounts) {
+  localStorage.setItem('ironascent_accounts', JSON.stringify(accounts));
+}
+
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('ironascent_session') || 'null'); } catch { return null; }
+}
+
+function setSession(username) {
+  if (username) localStorage.setItem('ironascent_session', JSON.stringify({ username }));
+  else localStorage.removeItem('ironascent_session');
+}
+
+const AVATAR_COLORS = ['av-0','av-1','av-2','av-3','av-4','av-5','av-6','av-7'];
+
+function avatarColor(username) {
+  let h = 0;
+  for (let c of username) h = (Math.imul(31, h) + c.charCodeAt(0)) | 0;
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function avatarLetter(username) { return username[0].toUpperCase(); }
+
+// ══════════════════════════════════════
+// SESSION STATE
+// ══════════════════════════════════════
+let currentUser = null; // username string
+let state = null;
+
+function freshState() {
+  return { xp: 0, mastered: [], achievements: [], inProgress: {}, _lastRank: 'Beginner' };
+}
+
+function loadUserState() {
+  const accounts = getAccounts();
+  const acc = accounts[currentUser.toLowerCase()];
+  state = acc?.data ? { ...freshState(), ...acc.data } : freshState();
+}
+
+function saveUserState() {
+  const accounts = getAccounts();
+  const key = currentUser.toLowerCase();
+  if (!accounts[key]) return;
+  accounts[key].data = state;
+  saveAccounts(accounts);
+  // Publish public profile to shared storage so other real users appear on leaderboard
+  publishProfile();
+}
+
+async function publishProfile() {
+  if (!currentUser || !state) return;
+  const profile = {
+    username: currentUser,
+    xp: state.xp || 0,
+    mastered: (state.mastered || []).length,
+    achievements: (state.achievements || []).length,
+    updatedAt: Date.now(),
+  };
+  try {
+    await window.storage.set('lb:' + currentUser.toLowerCase(), JSON.stringify(profile), true);
+  } catch(e) {}
+}
+
+async function fetchAllProfiles() {
+  try {
+    const result = await window.storage.list('lb:', true);
+    if (!result || !result.keys) return [];
+    const profiles = [];
+    for (const key of result.keys) {
+      try {
+        const r = await window.storage.get(key, true);
+        if (r?.value) profiles.push(JSON.parse(r.value));
+      } catch(e) {}
+    }
+    return profiles;
+  } catch(e) { return []; }
+}
+
+// ══════════════════════════════════════
+// AUTH UI
+// ══════════════════════════════════════
+let currentCategory = 'all';
+let openMoveId = null;
+
+function showAuth() {
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.remove('visible');
+  renderAuthAccountList();
+}
+
+function showApp() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.add('visible');
+  renderUserChip();
+  render();
+  publishProfile(); // register on leaderboard as soon as user logs in
+}
+
+function renderAuthAccountList() {
+  const accounts = getAccounts();
+  const keys = Object.keys(accounts);
+  const section = document.getElementById('existingAccountsSection');
+  const list = document.getElementById('authAccountList');
+
+  if (keys.length === 0) {
+    section.style.display = 'none';
+    switchAuthTab('register');
+    return;
+  }
+
+  section.style.display = 'block';
+  list.innerHTML = '';
+
+  if (keys.length === 0) {
+    list.innerHTML = '<div class="no-accounts">No accounts yet — create one below</div>';
+    return;
+  }
+
+  keys.forEach(k => {
+    const acc = accounts[k];
+    const rank = getRank(acc.data?.xp || 0);
+    const avClass = avatarColor(acc.username);
+    const el = document.createElement('div');
+    el.className = 'account-row';
+    el.innerHTML = `
+      <div class="account-avatar ${avClass}">${avatarLetter(acc.username)}</div>
+      <div class="account-info">
+        <div class="account-name">${acc.username}</div>
+        <div class="account-meta">${rank.name} · ${(acc.data?.xp||0).toLocaleString()} XP · ${(acc.data?.mastered||[]).length} mastered</div>
+      </div>
+      <span class="account-arrow">›</span>
+    `;
+    el.onclick = () => quickLogin(acc.username);
+    list.appendChild(el);
+  });
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('panelRegister').classList.toggle('active', tab === 'register');
+  clearAuthErrors();
+}
+
+function clearAuthErrors() {
+  ['loginError','regUsernameError','regPinError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+}
+
+// Set up PIN field auto-advance for auth forms
+function setupPinFields(prefix) {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(prefix + i);
+    el.addEventListener('input', e => {
+      el.value = el.value.replace(/\D/g,'').slice(-1);
+      if (el.value && i < 3) document.getElementById(prefix + (i+1)).focus();
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !el.value && i > 0) document.getElementById(prefix + (i-1)).focus();
+    });
+  }
+}
+
+function getPinValue(prefix) {
+  return [0,1,2,3].map(i => document.getElementById(prefix+i).value).join('');
+}
+
+function clearPinFields(prefix) {
+  [0,1,2,3].forEach(i => { document.getElementById(prefix+i).value = ''; });
+  document.getElementById(prefix+'0').focus();
+}
+
+// Quick login: click an account card on auth screen — triggers PIN modal
+function quickLogin(username) {
+  requestPin(username, (success) => {
+    if (success) loginAs(username);
+  });
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const pin = getPinValue('lp');
+  const errEl = document.getElementById('loginError');
+
+  if (!username) { errEl.textContent = 'Enter your username.'; return; }
+  if (pin.length < 4) { errEl.textContent = 'Enter your 4-digit PIN.'; return; }
+
+  const accounts = getAccounts();
+  const acc = accounts[username.toLowerCase()];
+  if (!acc) { errEl.textContent = 'Account not found.'; return; }
+  if (acc.pinHash !== hashPin(pin)) { errEl.textContent = 'Incorrect PIN.'; clearPinFields('lp'); return; }
+
+  loginAs(acc.username);
+}
+
+function doRegister() {
+  const username = document.getElementById('regUsername').value.trim();
+  const pin = getPinValue('rp');
+  const uErr = document.getElementById('regUsernameError');
+  const pErr = document.getElementById('regPinError');
+
+  uErr.textContent = '';
+  pErr.textContent = '';
+
+  if (!username) { uErr.textContent = 'Choose a username.'; return; }
+  if (!/^[a-zA-Z0-9_\-]+$/.test(username)) { uErr.textContent = 'Letters, numbers, _ and - only.'; return; }
+  if (username.length < 2) { uErr.textContent = 'At least 2 characters.'; return; }
+
+  const accounts = getAccounts();
+  if (accounts[username.toLowerCase()]) { uErr.textContent = 'Username already taken.'; return; }
+  if (pin.length < 4) { pErr.textContent = 'Enter a 4-digit PIN.'; return; }
+
+  const newAcc = {
+    username,
+    pinHash: hashPin(pin),
+    createdAt: Date.now(),
+    data: freshState()
+  };
+
+  accounts[username.toLowerCase()] = newAcc;
+  saveAccounts(accounts);
+  loginAs(username);
+}
+
+function loginAs(username) {
+  currentUser = username;
+  setSession(username);
+  loadUserState();
+  showApp();
+  toast(`Welcome back, ${username}!`, getRank(state.xp).name + ' · ' + state.xp.toLocaleString() + ' XP');
+}
+
+function signOut() {
+  currentUser = null;
+  state = null;
+  setSession(null);
+  closeAccountModal();
+  showAuth();
+}
+
+// ══════════════════════════════════════
+// ACCOUNT MODAL (in-app)
+// ══════════════════════════════════════
+function renderUserChip() {
+  const avClass = avatarColor(currentUser);
+  const letter = avatarLetter(currentUser);
+  const chipAvatar = document.getElementById('headerAvatar');
+  chipAvatar.className = `user-chip-avatar ${avClass}`;
+  chipAvatar.textContent = letter;
+  document.getElementById('headerUsername').textContent = currentUser.toUpperCase();
+}
+
+function openAccountModal() {
+  const accounts = getAccounts();
+  const avClass = avatarColor(currentUser);
+  const rank = getRank(state.xp);
+
+  // Current user card
+  document.getElementById('amCurrentUser').innerHTML = `
+    <div class="am-account-row current-user" style="cursor:default">
+      <div class="account-avatar ${avClass}" style="width:30px;height:30px;font-size:0.9rem;">${avatarLetter(currentUser)}</div>
+      <div style="flex:1">
+        <div class="am-account-name">${currentUser}</div>
+        <div class="am-account-meta">${rank.name} · ${state.xp.toLocaleString()} XP · ${state.mastered.length} mastered</div>
+      </div>
+      <span style="color:var(--accent);font-size:0.7rem;">● ACTIVE</span>
+    </div>
+  `;
+
+  // Other users
+  const otherKeys = Object.keys(accounts).filter(k => k !== currentUser.toLowerCase());
+  const othersEl = document.getElementById('amOtherUsers');
+  if (otherKeys.length === 0) {
+    othersEl.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:10px 0;">No other accounts on this device</div>';
+  } else {
+    othersEl.innerHTML = otherKeys.map(k => {
+      const acc = accounts[k];
+      const r = getRank(acc.data?.xp || 0);
+      const av = avatarColor(acc.username);
+      return `
+        <div class="am-account-row" onclick="switchToAccount('${acc.username}')">
+          <div class="account-avatar ${av}" style="width:30px;height:30px;font-size:0.9rem;">${avatarLetter(acc.username)}</div>
+          <div style="flex:1">
+            <div class="am-account-name">${acc.username}</div>
+            <div class="am-account-meta">${r.name} · ${(acc.data?.xp||0).toLocaleString()} XP</div>
+          </div>
+          <span style="color:var(--muted);font-size:0.9rem;">›</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('accountModal').classList.remove('hidden');
+}
+
+function closeAccountModal() {
+  document.getElementById('accountModal').classList.add('hidden');
+}
+
+function switchToAccount(username) {
+  closeAccountModal();
+  requestPin(username, (ok) => {
+    if (ok) loginAs(username);
+  });
+}
+
+function deleteCurrentAccount() {
+  if (!confirm(`Delete account "${currentUser}" and all its progress? This cannot be undone.`)) return;
+  const accounts = getAccounts();
+  delete accounts[currentUser.toLowerCase()];
+  saveAccounts(accounts);
+  currentUser = null;
+  state = null;
+  setSession(null);
+  closeAccountModal();
+  showAuth();
+  toast('Account deleted', 'All progress removed.');
+}
+
+// ══════════════════════════════════════
+// PIN MODAL
+// ══════════════════════════════════════
+let pinBuffer = '';
+let pinCallback = null;
+let pinTargetUser = '';
+
+function requestPin(username, callback) {
+  pinTargetUser = username;
+  pinCallback = callback;
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinModalUser').textContent = username;
+  document.getElementById('pinModal').classList.remove('hidden');
+}
+
+function closePinModal() {
+  document.getElementById('pinModal').classList.add('hidden');
+  pinBuffer = '';
+  pinCallback = null;
+}
+
+function pinKey(digit) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += digit;
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 120);
+}
+
+function pinBackspace() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updatePinDots();
+  document.getElementById('pinError').textContent = '';
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd'+i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function checkPin() {
+  const accounts = getAccounts();
+  const acc = accounts[pinTargetUser.toLowerCase()];
+  if (!acc) { document.getElementById('pinError').textContent = 'Account not found.'; pinBuffer = ''; updatePinDots(); return; }
+  if (acc.pinHash !== hashPin(pinBuffer)) {
+    document.getElementById('pinError').textContent = 'Incorrect PIN.';
+    pinBuffer = '';
+    updatePinDots();
+    // Shake animation
+    const box = document.querySelector('.pin-modal-box');
+    box.style.animation = 'none';
+    box.offsetHeight;
+    box.style.animation = 'shake 0.3s ease';
+    return;
+  }
+  closePinModal();
+  if (pinCallback) pinCallback(true);
+}
+
+// ══════════════════════════════════════
+// GAME LOGIC
+// ══════════════════════════════════════
+function isMastered(id) { return state.mastered.includes(id); }
+function isUnlocked(move) { return move.prereqs.every(p => state.mastered.includes(p)); }
+function getProgress(id) { return state.inProgress[id] || 0; }
+function setProgress(id, val) { state.inProgress[id] = Math.max(0, Math.min(100, val)); saveUserState(); }
+
+function getRank(xp) {
+  let rank = RANKS[0];
+  for (const r of RANKS) { if (xp >= r.min) rank = r; }
+  return rank;
+}
+
+function getNextRank(xp) {
+  for (const r of RANKS) { if (r.min > xp) return r; }
+  return null;
+}
+
+function masterMove(id) {
+  if (isMastered(id)) return;
+  const move = MOVES.find(m => m.id === id);
+  if (!move || !isUnlocked(move)) return;
+
+  const prevRank = getRank(state.xp).name;
+  state.mastered.push(id);
+  state.xp += move.xp;
+  state.inProgress[id] = 100;
+
+  checkAchievements();
+  saveUserState();
+  render();
+
+  toast(`✦ ${move.name} Mastered`, `+${move.xp} XP earned`);
+
+  const newRank = getRank(state.xp).name;
+  if (newRank !== prevRank) showRankUp(newRank);
+
+  closeModal(null);
+}
+
+function checkAchievements() {
+  for (const ach of ACHIEVEMENTS) {
+    if (!state.achievements.includes(ach.id) && ach.check(state)) {
+      state.achievements.push(ach.id);
+      setTimeout(() => toast(`🏆 Achievement: ${ach.name}`, ach.desc), 500);
+    }
+  }
+}
+
+// ══════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════
+function render() {
+  renderXPBar();
+  renderHeader();
+  renderMoves();
+  renderAchievements();
+  renderCategoryProgress();
+  renderLeagueChip();
+}
+
+function renderHeader() {
+  const rank = getRank(state.xp);
+  document.getElementById('totalXP').textContent = state.xp.toLocaleString();
+  document.getElementById('totalMastered').textContent = state.mastered.length;
+  const badge = document.getElementById('rankBadge');
+  badge.textContent = rank.name.toUpperCase();
+  badge.style.color = rank.color;
+  badge.style.borderColor = rank.color;
+  badge.style.boxShadow = `0 0 20px ${rank.color}33`;
+}
+
+function renderXPBar() {
+  const rank = getRank(state.xp);
+  const next = getNextRank(state.xp);
+  const min = rank.min;
+  const max = next ? next.min : rank.min + 5000;
+  const pct = next ? ((state.xp - min) / (max - min)) * 100 : 100;
+  document.getElementById('xpFill').style.width = Math.min(100, pct) + '%';
+  document.getElementById('xpNumbers').textContent = next
+    ? `${(state.xp - min).toLocaleString()} / ${(max - min).toLocaleString()} XP → ${next.name}`
+    : `${state.xp.toLocaleString()} XP — MAX RANK`;
+}
+
+function renderMoves() {
+  const filtered = currentCategory === 'all' ? MOVES : MOVES.filter(m => m.cat === currentCategory);
+  const grid = document.getElementById('moveGrid');
+  grid.innerHTML = '';
+
+  const diffLabels = ['','Novice','Apprentice','Warrior','Elite','Master','Legend'];
+  const diffColors = ['','diff-1','diff-2','diff-3','diff-4','diff-5','diff-6'];
+
+  for (const move of filtered) {
+    const unlocked = isUnlocked(move);
+    const mastered = isMastered(move.id);
+    const progress = getProgress(move.id);
+    const locked = !unlocked;
+
+    const card = document.createElement('div');
+    card.className = `move-card${locked ? ' locked' : ''}${mastered ? ' mastered' : ''}`;
+    card.onclick = () => !locked && openModal(move.id);
+
+    let prereqText = '';
+    if (locked) {
+      const needs = move.prereqs.filter(p => !state.mastered.includes(p));
+      const names = needs.map(p => MOVES.find(m=>m.id===p)?.name).join(', ');
+      prereqText = `<div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;">🔒 Requires: ${names}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="lock-icon">🔒</div>
+      <div class="card-top">
+        <span class="move-icon">${move.icon}</span>
+        <span class="difficulty-badge ${diffColors[move.diff]}">${diffLabels[move.diff]}</span>
+      </div>
+      <div class="move-name">${move.name}</div>
+      <div class="move-desc">${move.desc}</div>
+      ${prereqText}
+      <div class="move-xp">+${move.xp} XP</div>
+      <div class="card-progress">
+        <div class="card-prog-label"><span>Progress</span><span>${mastered ? '100%' : progress + '%'}</span></div>
+        <div class="card-prog-track"><div class="card-prog-fill" style="width:${mastered ? 100 : progress}%"></div></div>
+      </div>
+      <div class="card-actions">
+        ${!mastered && !locked ? `<button class="btn btn-primary" onclick="event.stopPropagation();openModal('${move.id}')">View Details</button>` : ''}
+        ${mastered ? `<button class="btn" disabled>✦ Mastered</button>` : ''}
+        ${locked ? `<button class="btn" disabled>Locked</button>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achievementList');
+  list.innerHTML = '';
+  for (const ach of ACHIEVEMENTS) {
+    const earned = state.achievements.includes(ach.id);
+    const el = document.createElement('div');
+    el.className = `achievement${earned ? ' earned' : ''}`;
+    el.innerHTML = `
+      <span class="achievement-icon">${ach.icon}</span>
+      <div><div class="achievement-name">${ach.name}</div><div class="achievement-desc">${ach.desc}</div></div>
+    `;
+    list.appendChild(el);
+  }
+}
+
+function renderCategoryProgress() {
+  const cats = ['all','push','pull','legs','core','skill'];
+  for (const cat of cats) {
+    const moves = cat === 'all' ? MOVES : MOVES.filter(m => m.cat === cat);
+    const done = moves.filter(m => state.mastered.includes(m.id)).length;
+    document.getElementById(`prog-${cat}`).textContent = `${done}/${moves.length}`;
+  }
+}
+
+// ══════════════════════════════════════
+// MOVE MODAL
+// ══════════════════════════════════════
+function openModal(id) {
+  const move = MOVES.find(m => m.id === id);
+  if (!move) return;
+  openMoveId = id;
+
+  document.getElementById('modalIcon').textContent = move.icon;
+  document.getElementById('modalTitle').textContent = move.name;
+
+  const diffLabels = ['','Novice','Apprentice','Warrior','Elite','Master','Legend'];
+  const diffColors = ['','diff-1','diff-2','diff-3','diff-4','diff-5','diff-6'];
+  document.getElementById('modalDiff').innerHTML =
+    `<span class="difficulty-badge ${diffColors[move.diff]}">${diffLabels[move.diff]} · Diff ${move.diff}/6 · +${move.xp} XP</span>`;
+
+  document.getElementById('modalDesc').textContent = move.desc;
+
+  document.getElementById('progSteps').innerHTML = move.steps.map((s, i) =>
+    `<div class="prog-step"><div class="prog-step-num">${i+1}</div><span>${s}</span></div>`
+  ).join('');
+
+  document.getElementById('setsReps').innerHTML = `
+    <div class="sets-reps-item"><div class="sr-label">Sets</div><div class="sr-val">${move.sets}</div></div>
+    <div class="sets-reps-item"><div class="sr-label">Reps</div><div class="sr-val">${move.reps}</div></div>
+    <div class="sets-reps-item"><div class="sr-label">Rest</div><div class="sr-val">${move.rest}</div></div>
+  `;
+
+  const mastered = isMastered(id);
+  const actions = document.getElementById('modalActions');
+  if (mastered) {
+    actions.innerHTML = `<button class="btn" style="flex:1;border-color:var(--accent);color:var(--accent);" disabled>✦ Already Mastered</button>`;
+  } else {
+    actions.innerHTML = `
+      <button class="btn" onclick="logProgress()">+ Log Session</button>
+      <button class="btn btn-primary" onclick="masterMove('${id}')">Mark as Mastered ✦</button>
+    `;
+  }
+
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function logProgress() {
+  if (!openMoveId) return;
+  const current = getProgress(openMoveId);
+  const newVal = Math.min(95, current + 20);
+  setProgress(openMoveId, newVal);
+  toast('Session Logged', `Progress: ${newVal}%`);
+  render();
+  openModal(openMoveId);
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.add('hidden');
+  openMoveId = null;
+}
+
+// ══════════════════════════════════════
+// CATEGORY FILTER
+// ══════════════════════════════════════
+function filterCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  const names = { all:'All Moves', push:'Push', pull:'Pull', legs:'Legs', core:'Core', skill:'Skills' };
+  const subs = { all:'Your calisthenics skill tree', push:'Pushing movements & pressing', pull:'Pulling strength & back', legs:'Lower body power', core:'Core strength & stability', skill:'Advanced gymnastic skills' };
+  document.getElementById('sectionTitle').textContent = names[cat];
+  document.getElementById('sectionSub').textContent = subs[cat];
+  renderMoves();
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(title, body) {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ══════════════════════════════════════
+// RANK UP
+// ══════════════════════════════════════
+function showRankUp(rankName) {
+  const overlay = document.getElementById('rankupOverlay');
+  document.getElementById('rankupRankName').textContent = rankName.toUpperCase();
+  overlay.classList.remove('hidden');
+  setTimeout(() => overlay.classList.add('hidden'), 2800);
+}
+
+// ══════════════════════════════════════
+// RESET
+// ══════════════════════════════════════
+function confirmReset() {
+  if (!confirm(`Reset all progress for "${currentUser}"? This cannot be undone.`)) return;
+  state = freshState();
+  saveUserState();
+  render();
+  toast('Progress Reset', 'Starting fresh — time to grind.');
+}
+
+// ══════════════════════════════════════
+// LEAGUE SYSTEM
+// ══════════════════════════════════════
+
+const LEAGUES = [
+  { id:'bronze',   name:'Bronze',   icon:'🪨', color:'#cd7f32', minXP:0,     promoteTop:3, demoteBottom:0, desc:'Starting league' },
+  { id:'silver',   name:'Silver',   icon:'🥈', color:'#c0c0c0', minXP:300,   promoteTop:3, demoteBottom:3, desc:'Gaining momentum' },
+  { id:'gold',     name:'Gold',     icon:'🥇', color:'#ffd700', minXP:800,   promoteTop:3, demoteBottom:3, desc:'Getting serious' },
+  { id:'platinum', name:'Platinum', icon:'💠', color:'#5bb8ff', minXP:2000,  promoteTop:3, demoteBottom:3, desc:'Dedicated athlete' },
+  { id:'diamond',  name:'Diamond',  icon:'💎', color:'#a8f0ff', minXP:5000,  promoteTop:3, demoteBottom:3, desc:'Elite performer' },
+  { id:'obsidian', name:'Obsidian', icon:'🌑', color:'#e8ff4a', minXP:10000, promoteTop:0, demoteBottom:3, desc:'The pinnacle' },
+];
+
+function getLeague(xp) {
+  let league = LEAGUES[0];
+  for (const l of LEAGUES) { if (xp >= l.minXP) league = l; }
+  return league;
+}
+
+// Cache of all profiles fetched from shared storage
+let _cachedProfiles = null;
+
+function getLeagueMembers(leagueId, profiles) {
+  return profiles
+    .filter(e => getLeague(e.xp).id === leagueId)
+    .sort((a, b) => b.xp - a.xp);
+}
+
+let activeLeagueTab = null;
+
+async function openLeaderboard() {
+  activeLeagueTab = getLeague(state?.xp || 0).id;
+  document.getElementById('leaderboardModal').classList.remove('hidden');
+  // Show loading state
+  document.getElementById('lbList').innerHTML = '<div class="lb-empty" style="padding:48px">Loading athletes...</div>';
+  document.getElementById('lbHeader').innerHTML = '';
+  document.getElementById('lbLeagueTabs').innerHTML = '';
+  document.getElementById('lbZones').innerHTML = '';
+  document.getElementById('lbCount').textContent = '';
+
+  // Publish own profile first, then fetch everyone
+  await publishProfile();
+  _cachedProfiles = await fetchAllProfiles();
+
+  // Ensure own profile is always in the list (even if storage failed)
+  const myKey = currentUser?.toLowerCase();
+  const alreadyIn = _cachedProfiles.some(p => p.username.toLowerCase() === myKey);
+  if (!alreadyIn && currentUser) {
+    _cachedProfiles.push({
+      username: currentUser,
+      xp: state?.xp || 0,
+      mastered: (state?.mastered || []).length,
+      achievements: (state?.achievements || []).length,
+    });
+  }
+
+  renderLeagueModal();
+}
+
+function closeLeaderboard() {
+  document.getElementById('leaderboardModal').classList.add('hidden');
+}
+
+function renderLeagueModal() {
+  renderLeagueTabs();
+  renderLeagueView(activeLeagueTab);
+}
+
+function renderLeagueTabs() {
+  const container = document.getElementById('lbLeagueTabs');
+  const myLeague = getLeague(state?.xp || 0).id;
+  container.innerHTML = LEAGUES.map(l => {
+    const isActive = l.id === activeLeagueTab;
+    const isYours  = l.id === myLeague;
+    const count = getLeagueMembers(l.id, _cachedProfiles || []).length;
+    return `
+      <button class="lb-league-tab${isActive ? ' active' : ''}"
+              style="--lb-league-color:${l.color}"
+              onclick="switchLeagueTab('${l.id}')">
+        <span class="lb-tab-icon">${l.icon}</span>
+        <span class="lb-tab-name">${l.name}</span>
+        ${count > 0 ? `<span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--muted)">${count}</span>` : ''}
+        ${isYours ? '<span class="lb-tab-you"></span>' : ''}
+      </button>
+    `;
+  }).join('');
+}
+
+function switchLeagueTab(leagueId) {
+  activeLeagueTab = leagueId;
+  renderLeagueModal();
+  const tabs = document.getElementById('lbLeagueTabs');
+  const active = tabs.querySelector('.lb-league-tab.active');
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function renderLeagueView(leagueId) {
+  const profiles = _cachedProfiles || [];
+  const league = LEAGUES.find(l => l.id === leagueId);
+  const members = getLeagueMembers(leagueId, profiles);
+  const leagueIdx = LEAGUES.findIndex(l => l.id === leagueId);
+  const isTopLeague = leagueIdx === LEAGUES.length - 1;
+  const isBottomLeague = leagueIdx === 0;
+  const myLeague = getLeague(state?.xp || 0).id;
+  const isMyLeague = leagueId === myLeague;
+  const myPos = isMyLeague
+    ? members.findIndex(e => currentUser && e.username.toLowerCase() === currentUser.toLowerCase()) + 1
+    : null;
+
+  document.getElementById('lbHeader').style.setProperty('--lb-league-color', league.color);
+  document.getElementById('lbHeader').innerHTML = `
+    <span class="lb-league-emblem" style="--lb-league-color:${league.color}">${league.icon}</span>
+    <div class="lb-header-text">
+      <div class="lb-title" style="color:${league.color}">${league.name} League</div>
+      <div class="lb-subtitle">${league.desc} · ${members.length} athlete${members.length !== 1 ? 's' : ''}</div>
+    </div>
+    ${isMyLeague && myPos ? `
+      <div class="lb-your-pos-chip" style="border-color:${league.color};color:${league.color}">
+        #${myPos}<small>Your Rank</small>
+      </div>` : ''}
+    ${!isMyLeague ? `<div style="font-size:0.65rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-align:right;">You're in<br><span style="color:${getLeague(state?.xp||0).color}">${getLeague(state?.xp||0).name}</span></div>` : ''}
+  `;
+
+  const zonesEl = document.getElementById('lbZones');
+  let zoneHtml = '';
+  if (!isTopLeague && members.length > 0) {
+    zoneHtml += `<div class="lb-zone-banner lb-zone-promote"><span class="lb-zone-dot"></span>Top ${league.promoteTop} promote to ${LEAGUES[leagueIdx+1].name}</div>`;
+  }
+  if (!isBottomLeague && members.length > 0) {
+    zoneHtml += `<div class="lb-zone-banner lb-zone-demote"><span class="lb-zone-dot"></span>Bottom ${league.demoteBottom} demote to ${LEAGUES[leagueIdx-1].name}</div>`;
+  }
+  zonesEl.innerHTML = zoneHtml;
+
+  const list = document.getElementById('lbList');
+  if (members.length === 0) {
+    list.innerHTML = `<div class="lb-empty">${league.icon}<br><br>No athletes in this league yet.<br><span style="font-size:0.75rem">Be the first — earn XP to join!</span></div>`;
+    document.getElementById('lbCount').textContent = '';
+    return;
+  }
+
+  const maxXP = members[0].xp || 1;
+  const medals = ['🥇','🥈','🥉'];
+  const posClass = ['gold','silver','bronze'];
+  const promoteCount = league.promoteTop;
+  const demoteCount  = league.demoteBottom;
+  const totalCount   = members.length;
+
+  let html = '';
+  members.forEach((e, i) => {
+    const rank = getRank(e.xp);
+    const isYou = currentUser && e.username.toLowerCase() === currentUser.toLowerCase();
+    const pct = Math.max(3, Math.round((e.xp / maxXP) * 100));
+    const avClass = avatarColor(e.username);
+    const inPromote = !isTopLeague && i < promoteCount;
+    const inDemote  = !isBottomLeague && i >= (totalCount - demoteCount);
+
+    if (i === promoteCount && promoteCount > 0 && !isTopLeague) {
+      html += `<div class="lb-section-divider">Safe Zone</div>`;
+    }
+    if (i === totalCount - demoteCount && demoteCount > 0 && !isBottomLeague && totalCount - demoteCount > promoteCount) {
+      html += `<div class="lb-section-divider">Demotion Zone</div>`;
+    }
+
+    const zoneClass = inPromote ? ' zone-promote' : inDemote ? ' zone-demote' : '';
+    const posEl = i < 3
+      ? `<span class="lb-pos ${posClass[i]}">${medals[i]}</span>`
+      : `<span class="lb-pos">${i + 1}</span>`;
+
+    html += `
+      <div class="lb-row${isYou ? ' is-you' : ''}${zoneClass}">
+        ${posEl}
+        <div class="lb-avatar ${avClass}">${avatarLetter(e.username)}</div>
+        <div class="lb-info">
+          <div class="lb-name-row">
+            <span class="lb-name">${e.username}</span>
+            ${isYou ? '<span class="lb-you-tag">YOU</span>' : ''}
+            <span class="lb-rank-badge" style="color:${rank.color};border-color:${rank.color};">${rank.name}</span>
+          </div>
+          <div class="lb-meta">${e.mastered} mastered · ${e.achievements} achievements</div>
+          <div class="lb-bar-wrap"><div class="lb-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="lb-xp-col">
+          <div class="lb-xp-val">${e.xp.toLocaleString()}</div>
+          <div class="lb-xp-label">XP</div>
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+
+  if (isMyLeague) {
+    requestAnimationFrame(() => {
+      const youRow = list.querySelector('.lb-row.is-you');
+      if (youRow) youRow.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  const yourPos = isMyLeague
+    ? members.findIndex(e => currentUser && e.username.toLowerCase() === currentUser.toLowerCase())
+    : -1;
+  document.getElementById('lbCount').textContent =
+    yourPos >= 0
+      ? `You · #${yourPos + 1} of ${totalCount}`
+      : `${totalCount} athlete${totalCount !== 1 ? 's' : ''}`;
+}
+
+function renderLeagueChip() {
+  const btn = document.querySelector('.leaderboard-btn');
+  if (!btn) return;
+  const league = getLeague(state?.xp || 0);
+  btn.innerHTML = `<span class="cat-icon">${league.icon}</span> Leagues <span class="lb-league-chip" style="color:${league.color};margin-left:auto;">${league.name}</span>`;
+}
+
+// ══════════════════════════════════════
+// SHAKE KEYFRAME (inline)
+// ══════════════════════════════════════
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }`;
+document.head.appendChild(shakeStyle);
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+setupPinFields('lp');
+setupPinFields('rp');
+
+// Check for existing session
+const session = getSession();
+if (session?.username) {
+  const accounts = getAccounts();
+  if (accounts[session.username.toLowerCase()]) {
+    currentUser = accounts[session.username.toLowerCase()].username;
+    loadUserState();
+    showApp();
+  } else {
+    setSession(null);
+    showAuth();
+  }
+} else {
+  showAuth();
+}
+</script>
+</body>
+</html>
